@@ -1,5 +1,5 @@
 import streamlit as st
-from generate_offer.generate_offer import grunteco
+from generate_offer import grunteco
 from io import BytesIO
 
 st.header("Рассчет коммерческого предложения")
