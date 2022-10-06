@@ -1,11 +1,8 @@
+streamlit
 gunicorn
 # data science
 numpy
 pandas
-
-
-
-
 #presentation
 python-pptx
 openpyxl
