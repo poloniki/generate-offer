@@ -1,8 +1,5 @@
 from pptx import Presentation
-from pptx.chart.data import CategoryChartData
 from pptx.util import Pt
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.util import Inches
 import pandas as pd
 import math
 
@@ -23,8 +20,7 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     square = total_burts * (burt_length+1) * (burt_width+1)
     membranes =total_burts
 
-    #
-    price_df = pd.read_excel('../raw_data/price.xlsx')
+    price_df = pd.read_excel('/home/poloniki/code/poloniki/generate_offer/raw_data/price.xlsx')
     price_df.columns = ['name', 'price']
     price_df['name'] = price_df['name'].str.lower()
     price_df['price'] = price_df['price'].replace(39.900000,13.3)
@@ -35,7 +31,7 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     price_dict = {each:float(price_df.loc[price_df['name']== each]['price']) for each in list(price_df['name'])}
     price_dict.update({'мембраны': 78878/50*burt_length})
 
-    customs_df = pd.read_excel('../raw_data/membrane.xlsx')
+    customs_df = pd.read_excel('/home/poloniki/code/poloniki/generate_offer/raw_data/membrane.xlsx')
     customs_df['Наименование'] = customs_df['Наименование'].str.lower()
 
     customs_dict = {each:float(customs_df.loc[customs_df['Наименование']==each]['Процент пошлины, %']) for each in list(customs_df['Наименование'])}
@@ -90,12 +86,10 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     final_with_nds.update({'монтаж оборудования':154647*total_burts*1.2})
     total_price = sum(final_with_nds.values())
 
-    pres = Presentation('../raw_data/base.pptx')
+    pres = Presentation('/home/poloniki/code/poloniki/generate_offer/raw_data/base.pptx')
     slides = [slide for slide in pres.slides]
     slide0 = slides[0]
-    slide0_shapes = [shape for shape in slide0.shapes]
     title_shapes = [shape for shape in slide0.shapes if shape.has_text_frame]
-    placeholder_text = [shape.text for shape in title_shapes if shape.has_text_frame]
     title = [shape for shape in title_shapes if shape.has_text_frame and shape.text == 'Мощностью {{ tonns }} тонн в год']
     title[0].text = "мощностью %s тонн в год" % ("{:,d}".format(int(tonns)))
     slide2 = pres.slides[2]
@@ -144,7 +138,6 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
 
     slide11 = slides[11]
     slide11_shapes = [shape for shape in slide11.shapes]
-    texts = [shape.text for shape in slide11_shapes if shape.has_text_frame]
 
     slide11_shapes[8].text = 'Цена  Договора составляет %s руб. c НДС и включает в себя:\n\nОплата производится по частям в следующем порядке:\n1) Первый платеж в размере 35 процентов от Цены Договора осуществляется после подписания Договора, путем перечисления денежных средств на счет Поставщика и составляет –    %s руб.\n2) Второй платеж в размере 60 процентов от Цены Договора осуществляется после отгрузки Товара в Баден-Бадене, путем перечисления денежных средств на счет Поставщика и составляет –    %s руб.\n3) Третий платеж в размере 5 процентов от Цены Договора осуществляется после ввода оборудования в эксплуатацию, путем перечисления денежных средств на счет Поставщика и составляет –   %s руб.' % (tot_str,perc35,perc60,perc5)
 
@@ -192,8 +185,8 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     text = "%s тонн, %s м. длина, %s м. высота стенки, %s недель.pptx"  %("{:,d}".format(int(tonns)),burt_length,burt_wall, weeks)
 
     print(bcolors.WARNING + text + bcolors.ENDC)
-    pres.save(text)
-    return text
+    #pres.save(text)
+    return pres
 
-
-if __main__
+if __name__ == '__main__':
+    grunteco(10000,50,0.6,5,1, 65)
