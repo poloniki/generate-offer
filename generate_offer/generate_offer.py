@@ -20,7 +20,7 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     square = total_burts * (burt_length+1) * (burt_width+1)
     membranes =total_burts
 
-    price_df = pd.read_excel('price.xlsx')
+    price_df = pd.read_excel('raw_data/price.xlsx')
     price_df.columns = ['name', 'price']
     price_df['name'] = price_df['name'].str.lower()
     price_df['price'] = price_df['price'].replace(39.900000,13.3)
@@ -31,7 +31,7 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     price_dict = {each:float(price_df.loc[price_df['name']== each]['price']) for each in list(price_df['name'])}
     price_dict.update({'мембраны': 78878/50*burt_length})
 
-    customs_df = pd.read_excel('membrane.xlsx')
+    customs_df = pd.read_excel('raw_data/membrane.xlsx')
     customs_df['Наименование'] = customs_df['Наименование'].str.lower()
 
     customs_dict = {each:float(customs_df.loc[customs_df['Наименование']==each]['Процент пошлины, %']) for each in list(customs_df['Наименование'])}
@@ -86,7 +86,7 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     final_with_nds.update({'монтаж оборудования':154647*total_burts*1.2})
     total_price = sum(final_with_nds.values())
 
-    pres = Presentation('base.pptx')
+    pres = Presentation('raw_data/base.pptx')
     slides = [slide for slide in pres.slides]
     slide0 = slides[0]
     title_shapes = [shape for shape in slide0.shapes if shape.has_text_frame]
@@ -185,8 +185,16 @@ def grunteco(tonns,burt_length,density,weeks,burt_wall, euro):
     text = "%s тонн, %s м. длина, %s м. высота стенки, %s недель.pptx"  %("{:,d}".format(int(tonns)),burt_length,burt_wall, weeks)
 
     print(bcolors.WARNING + text + bcolors.ENDC)
-    #pres.save(text)
-    return pres
+
+    overview = [{'Буртов':total_burts,
+        'Площадь':square,
+        'Цена':df.loc[df['Наименование']=='Итого']['Цена с НДС'][0],
+        'Рублей за тонну': round_up(sum(final_with_nds.values()) / tonns)
+
+        }
+        ]
+    overview = pd.DataFrame(overview)
+    return pres, overview
 
 if __name__ == '__main__':
     grunteco(10000,50,0.6,5,1, 65)
